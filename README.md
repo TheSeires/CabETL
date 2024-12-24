@@ -26,7 +26,9 @@ The SQL scripts used for creating the database and table can be found here: [lin
 ---
 
 ## Results
-- Number of Rows After Running the Program: 29,889
+- Number of rows after running the program: 29,840
+- Duplicate rows: 111
+- Invalid rows: 49
 
 ---
 
