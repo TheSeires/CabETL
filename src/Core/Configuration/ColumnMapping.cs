@@ -7,6 +7,7 @@ public class ColumnMapping
     public required string DbColumnName { get; init; }
     public required Type Type { get; init; }
     public bool Trim { get; init; } = true;
+    public bool RemoveRowIfNullOrEmpty { get; init; } = true;
     public Func<string, object?>? CustomConversion { get; init; }
 
     public void Validate()

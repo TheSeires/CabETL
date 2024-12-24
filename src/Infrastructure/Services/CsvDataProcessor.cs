@@ -53,6 +53,7 @@ public class CsvDataProcessor : IDataProcessor
 
         var count = 0;
         var duplicatesCount = 0;
+        var invalidCount = 0;
         while (reader.EndOfStream == false)
         {
             string? line = await reader.ReadLineAsync();
@@ -78,6 +79,12 @@ public class CsvDataProcessor : IDataProcessor
             }
 
             var row = CreateRow(dataTableBatch, values);
+            if (row == null)
+            {
+                invalidCount++;
+                continue;
+            }
+
             dataTableBatch.Rows.Add(row);
 
             if (dataTableBatch.Rows.Count >= _configuration.BatchSize)
@@ -98,7 +105,8 @@ public class CsvDataProcessor : IDataProcessor
         Console.WriteLine("Successfully processed all the data");
 
         WriteDuplicatesToFile(duplicatesCsvBuilder);
-        Console.WriteLine($"Duplicates: {duplicatesCount}");
+        Console.WriteLine($"Invalid rows: {invalidCount}");
+        Console.WriteLine($"Duplicate rows: {duplicatesCount}");
     }
 
     private string GenerateDuplicateKey(string[] values)
@@ -123,7 +131,7 @@ public class CsvDataProcessor : IDataProcessor
         }
     }
 
-    private DataRow CreateRow(DataTable dataTable, string[] values)
+    private DataRow? CreateRow(DataTable dataTable, string[] values)
     {
         var row = dataTable.NewRow();
         foreach (var mapping in _configuration.ColumnMappings)
@@ -137,13 +145,19 @@ public class CsvDataProcessor : IDataProcessor
                 ? values[mapping.SourceColumnIndex].Trim()
                 : values[mapping.SourceColumnIndex];
 
+            var isValueNullOrWhiteSpace = string.IsNullOrWhiteSpace(value);
+            if (mapping.RemoveRowIfNullOrEmpty && isValueNullOrWhiteSpace)
+            {
+                return null;
+            }
+
             if (mapping.CustomConversion != null)
             {
                 row[mapping.DbColumnName] = mapping.CustomConversion(value);
                 continue;
             }
 
-            if (string.IsNullOrEmpty(value))
+            if (isValueNullOrWhiteSpace)
             {
                 row[mapping.DbColumnName] = DBNull.Value;
                 continue;
