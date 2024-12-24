@@ -3,9 +3,9 @@ To run the program, follow these steps:
 - Set up a database using [SQL scripts](https://github.com/TheSeires/CabETL/tree/main/src/Infrastructure/Migrations)
 - Define the connection string for your database inside of [appsettings.json](https://github.com/TheSeires/CabETL/tree/main/src/Application/appsettings.json)
 - Open a terminal and navigate to the Application folder
-- Run command "**dotnet run -c Release "path_to_the_csv_file.csv"**" with the required argument for the CSV file path
+- Run command `dotnet run -c Release "path_to_the_csv_file.csv"` with the required argument for the CSV file path
 
-Example: **dotnet run -c Release "C:\Users\pc\Downloads\sample-cab-data.csv"**
+Example: `dotnet run -c Release "C:\Users\pc\Downloads\sample-cab-data.csv"`
 
 ***Ensure you are inside the Application folder before running the command!***
 
@@ -45,3 +45,6 @@ The SQL scripts used for creating the database and table can be found here: [lin
 
 5. Date Conversion:
    - Converted all dates from EST to UTC before inserting them into the database as required.
+
+6. Removed duplicates logging:
+   - Writes all removed duplicates into a `duplicates.csv` file inside of `Application` folder.
